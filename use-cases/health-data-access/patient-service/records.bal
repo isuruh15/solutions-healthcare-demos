@@ -56,7 +56,7 @@ public type LocatoionDetail record {
     string province?;
 };
 
-public type ResponseResource record{
+public type ResponseResource record {
     string resourceId;
     string version;
 };
