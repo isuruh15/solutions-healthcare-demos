@@ -26,7 +26,7 @@ configurable string[] scopes = ?;
 configurable string client_id = ?;
 configurable string client_secret = ?;
 
-service on new tcp:Listener(3000) {
+service on new tcp:Listener(8000) {
     remote function onConnect(tcp:Caller caller) returns tcp:ConnectionService {
         io:println("Client connected to HL7 server: ", caller.remotePort.toString());
         return new HL7ServiceConnectionService();

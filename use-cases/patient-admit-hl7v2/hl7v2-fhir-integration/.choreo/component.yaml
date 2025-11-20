@@ -4,7 +4,7 @@ endpoints:
       displayName: Process hl7 adt messages
       service:
         basePath: /
-        port: 3000
+        port: 8000
       type: TCP
       networkVisibilities:
         - Project
