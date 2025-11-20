@@ -1,4 +1,4 @@
-import ballerina/time;
+
 import ballerinax/health.hl7v2;
 import ballerinax/health.hl7v23;
 import ballerinax/health.hl7v24;
@@ -8,29 +8,6 @@ import ballerinax/health.fhir.r4;
 import ballerinax/health.fhir.r4.parser as r4parser;
 import ballerinax/health.fhir.r4.international401;
 import ballerinax/health.hl7v2.utils.v2tofhirr4;
-
-public isolated function getCurrentTimestamp() returns string {
-    time:Utc currentTime = time:utcNow();
-    return formatTimestamp(currentTime);
-}
-
-isolated function formatTimestamp(time:Utc timestamp) returns string {
-    // Convert the UTC timestamp to a time:Civil record (this includes both date and time fields)
-    time:Civil civil = time:utcToCivil(timestamp);
-
-    // Extract the year, month, day, and time components
-    string year = civil.year.toString();
-    string month = civil.month < 10 ? "0" + civil.month.toString() : civil.month.toString();
-    string day = civil.day < 10 ? "0" + civil.day.toString() : civil.day.toString();
-
-    // Extract the time of day (hours, minutes, seconds)
-    string hour = civil.hour < 10 ? "0" + civil.hour.toString() : civil.hour.toString();
-    string minute = civil.minute < 10 ? "0" + civil.minute.toString() : civil.minute.toString();
-    string second = <int>civil.second < 10 ? "0" : (<int>civil.second).toString();
-
-    // Return the formatted timestamp as "YYYYMMDDHHMMSS"
-    return year + month + day + hour + minute + second;
-}
 
 public isolated function generateAckMessage(hl7v2:Message message) returns byte[]|error {
 
