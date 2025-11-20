@@ -2,10 +2,6 @@ import ballerina/time;
 import ballerinax/health.hl7v2;
 import ballerinax/health.hl7v23;
 import ballerinax/health.hl7v24;
-import ballerinax/health.hl7v25;
-import ballerinax/health.hl7v26;
-import ballerinax/health.hl7v27;
-import ballerinax/health.hl7v28;
 import ballerina/log;
 import ballerina/uuid;
 import ballerinax/health.fhir.r4;
@@ -117,22 +113,6 @@ public isolated function generateAckMessage(hl7v2:Message message) returns byte[
         };
         ack = hl7v24Ack;
         hl7Version = hl7v24:VERSION;
-
-    } else if message is hl7v25:ADT_A01 {
-        hl7v25:ADT_A01 v25ParsedMessage = <hl7v25:ADT_A01>message;
-        log:printDebug(string `Received ADT_A01 message: ${v25ParsedMessage.toString()}`);
-
-    } else if message is hl7v26:ADT_A01 {
-        hl7v26:ADT_A01 v25ParsedMessage = <hl7v26:ADT_A01>message;
-        log:printDebug(string `Received ADT_A01 message: ${v25ParsedMessage.toString()}`);
-
-    } else if message is hl7v27:ADT_A01 {
-        hl7v27:ADT_A01 v25ParsedMessage = <hl7v27:ADT_A01>message;
-        log:printDebug(string `Received ADT_A01 message: ${v25ParsedMessage.toString()}`);
-
-    } else if message is hl7v28:ADT_A01 {
-        hl7v28:ADT_A01 v25ParsedMessage = <hl7v28:ADT_A01>message;
-        log:printDebug(string `Received ADT_A01 message: ${v25ParsedMessage.toString()}`);
 
     } else {
         log:printError(string `Received message is not an ADT_A01 message: ${message.toString()}`);

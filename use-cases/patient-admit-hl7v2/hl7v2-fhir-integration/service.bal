@@ -21,10 +21,10 @@ import ballerinax/health.fhir.r4.international401;
 import ballerina/log;
 
 configurable string fhirServerUrl = ?;
-// configurable string tokenUrl = ?;
-// configurable string[] scopes = ?;
-// configurable string client_id = ?;
-// configurable string client_secret = ?;
+configurable string tokenUrl = ?;
+configurable string[] scopes = ?;
+configurable string client_id = ?;
+configurable string client_secret = ?;
 
 service on new tcp:Listener(3000) {
     remote function onConnect(tcp:Caller caller) returns tcp:ConnectionService {

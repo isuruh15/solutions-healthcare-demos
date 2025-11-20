@@ -534,9 +534,6 @@ dependencies = [
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "health.hl7v2"}
 ]
-modules = [
-	{org = "ballerinax", packageName = "health.hl7v25", moduleName = "health.hl7v25"}
-]
 
 [[package]]
 org = "ballerinax"
@@ -557,9 +554,6 @@ dependencies = [
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "health.hl7v2"}
 ]
-modules = [
-	{org = "ballerinax", packageName = "health.hl7v26", moduleName = "health.hl7v26"}
-]
 
 [[package]]
 org = "ballerinax"
@@ -570,9 +564,6 @@ dependencies = [
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "health.hl7v2"}
 ]
-modules = [
-	{org = "ballerinax", packageName = "health.hl7v27", moduleName = "health.hl7v27"}
-]
 
 [[package]]
 org = "ballerinax"
@@ -582,9 +573,6 @@ dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerinax", name = "health.hl7v2"}
-]
-modules = [
-	{org = "ballerinax", packageName = "health.hl7v28", moduleName = "health.hl7v28"}
 ]
 
 [[package]]
@@ -622,11 +610,7 @@ dependencies = [
 	{org = "ballerinax", name = "health.hl7v2"},
 	{org = "ballerinax", name = "health.hl7v2.utils.v2tofhirr4"},
 	{org = "ballerinax", name = "health.hl7v23"},
-	{org = "ballerinax", name = "health.hl7v24"},
-	{org = "ballerinax", name = "health.hl7v25"},
-	{org = "ballerinax", name = "health.hl7v26"},
-	{org = "ballerinax", name = "health.hl7v27"},
-	{org = "ballerinax", name = "health.hl7v28"}
+	{org = "ballerinax", name = "health.hl7v24"}
 ]
 modules = [
 	{org = "wso2", packageName = "hl7v2_fhir_integration", moduleName = "hl7v2_fhir_integration"}
