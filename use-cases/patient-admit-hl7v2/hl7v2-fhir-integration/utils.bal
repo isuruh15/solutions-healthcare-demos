@@ -5,8 +5,7 @@ import ballerinax/health.fhir.r4.international401;
 import ballerinax/health.fhir.r4.parser as r4parser;
 import ballerinax/health.hl7v2;
 import ballerinax/health.hl7v23;
-import ballerinax/health.hl7v24;
-import ballerinax/health.hl7v2.utils.v2tofhirr4;
+import ballerinax/health.hl7v23.utils.v2tofhirr4;
 
 public isolated function generateAckMessage(hl7v2:Message message) returns byte[]|error {
 
@@ -49,48 +48,7 @@ public isolated function generateAckMessage(hl7v2:Message message) returns byte[
         };
         ack = hl7v23Ack;
         hl7Version = hl7v23:VERSION;
-    } else if message is hl7v24:ADT_A01 {
-        hl7v24:ADT_A01 v24ParsedMessage = <hl7v24:ADT_A01>message;
-        log:printDebug(string `Received ADT_A01 message: ${v24ParsedMessage.toString()}`);
-
-        hl7v24:ADT_A01 parsedMsg = <hl7v24:ADT_A01>message;
-
-        hl7v24:MSH? msh = ();
-        if parsedMsg is hl7v2:Message && parsedMsg.hasKey("msh") {
-            anydata mshEntry = parsedMsg["msh"];
-            hl7v24:MSH|error tempMSH = mshEntry.ensureType();
-            if tempMSH is error {
-                log:printError(string `Error occurred while casting MSH: ${tempMSH.message()}`);
-                return error("Error occurred while casting MSH", tempMSH);
-            }
-            msh = tempMSH;
-        }
-        if msh is () {
-            log:printError(string `Failed to extract MSH from HL7 message`);
-            return error("Failed to extract MSH from HL7 message");
-        }
-        // Create Acknowledgement message.
-        hl7v24:ACK hl7v24Ack = {
-            msh: {
-                msh2: "^~\\&",
-                msh3: {hd1: "TESTSERVER"},
-                msh4: {hd1: "WSO2OH"},
-                msh5: {hd1: msh.msh3.hd1},
-                msh6: {hd1: msh.msh4.hd1},
-                msh9: {},
-                msh10: uuid:createType1AsString().substring(0, 8),
-                msh11: {pt1: "P"},
-                msh12: {vid1: "2.4"}
-            },
-            msa: {
-                msa1: "AA",
-                msa2: msh.msh10
-            }
-        };
-        ack = hl7v24Ack;
-        hl7Version = hl7v24:VERSION;
-
-    } else {
+    }  else {
         log:printError(string `Received message is not an ADT_A01 message: ${message.toString()}`);
     }
 
