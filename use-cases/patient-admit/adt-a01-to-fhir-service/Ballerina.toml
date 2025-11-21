@@ -1,6 +1,6 @@
 [package]
 org = "wso2"
-name = "hl7v2_fhir_integration"
+name = "adt_a01_to_fhir_service"
 version = "0.1.0"
 distribution = "2201.12.10"
 

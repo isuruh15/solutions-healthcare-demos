@@ -4,12 +4,12 @@ import ballerinax/health.clients.fhir;
 import ballerinax/health.fhir.r4;
 
 http:OAuth2ClientCredentialsGrantConfig ehrSystemAuthConfig = {
-    tokenUrl: tokenUrl,
-    clientId: client_id,
-    clientSecret: client_secret,
-    scopes: scopes,
+    tokenUrl: tokenUrl is string ?tokenUrl:"",
+    clientId: client_id is string ?client_id:"",
+    clientSecret: client_secret is string ?client_secret:"",
+    scopes: scopes is string[] ?scopes:[],
     optionalParams: {
-        "resource": fhirServerUrl
+        "resource": fhirServerUrl is string ?fhirServerUrl:""
     }
 };
 
