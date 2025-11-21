@@ -15,8 +15,8 @@ http:OAuth2ClientCredentialsGrantConfig ehrSystemAuthConfig = {
 
 fhir:FHIRConnectorConfig ehrSystemConfig = {
     baseURL: fhirServerUrl,
-    mimeType: fhir:FHIR_JSON,
-    authConfig: ehrSystemAuthConfig
+    mimeType: fhir:FHIR_JSON
+    // authConfig: ehrSystemAuthConfig
 };
 
 isolated final fhir:FHIRConnector fhirConnector = check new (ehrSystemConfig);
