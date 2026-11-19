@@ -181,6 +181,115 @@ Each one prints its usage with `--help`.
 | 7 | Results filed in the EHR → **Results Analysis** → **Care Plan** → draft note in the EHR (preliminary) — unattended | Agents | activities |
 | 8 | Physician reviews and **releases**: note final, visit closed, report published, patient sees it | Physician | ⏸ **human task** (physician) |
 
+### How the systems work together
+
+One assessment, end to end. Calls to Claude go through the Agent Manager AI gateway and MCP calls through its
+MCP proxies when Agent Manager is set up; without it, the agents call Claude and the MCP servers directly. EHR
+traffic and the lab's messages pass through Toxiproxy (left out below).
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Dr as Physician
+  actor Pt as Patient
+  actor LabTech as Lab staff
+  participant UI as Demo portal
+  participant APIM as WSO2 APIM<br/>(optional SMART)
+  box Integration · Ballerina :9090
+    participant API as Integration API
+    participant WF as Temporal workflow
+    participant AG as Agents<br/>Copilot · Analysis · Care Plan
+  end
+  participant AMP as Agent Manager<br/>AI gateway · MCP proxies
+  participant MCP as FHIR MCP / PubMed MCP
+  participant CL as Claude API
+  participant EHR as EHR FHIR server
+  participant SIM as Lab simulator
+  participant LAB as Lab FHIR server
+  participant PG as Postgres
+
+  rect rgba(120,160,255,0.12)
+  Note over Dr,EHR: 1–2 · Open the patient and start the assessment
+  Dr->>UI: Search and open the patient
+  UI->>API: GET patients, summary (IPS), records
+  API->>EHR: FHIR searches
+  EHR-->>API: Patient, Conditions, Observations, ...
+  API-->>UI: FHIR (IPS document, explorer resources)
+  Dr->>UI: Start assessment
+  UI->>API: POST /assessments
+  API->>WF: Start longevityAssessment
+  WF->>EHR: buildPatientSummary (read), openEhrEncounter (create Encounter)
+  end
+
+  rect rgba(120,200,160,0.12)
+  Note over Dr,CL: 3 · Explore with the Copilot and order labs (human task: physician)
+  Dr->>UI: Ask the Copilot
+  UI->>API: POST /copilot-messages
+  API->>AG: Copilot turn (memory in Postgres)
+  AG->>AMP: AgentID token, MCP search / read
+  AMP->>MCP: Proxied tool call (FHIR de-identified)
+  MCP->>EHR: FHIR search / read
+  AG->>AMP: Messages API (key per agent, PHI guardrail)
+  AMP->>CL: Claude call
+  CL-->>AG: Answer
+  AG-->>UI: Copilot reply
+  Dr->>UI: Order labs
+  UI->>API: POST /lab-order
+  API->>WF: Complete human task orderLabs
+  end
+
+  rect rgba(255,190,120,0.12)
+  Note over WF,LAB: 4 · Place the order and notify the patient
+  WF->>EHR: placeLabOrder: ServiceRequest (order of record)
+  WF->>LAB: Match patient by MRN, create the lab's ServiceRequest
+  WF->>EHR: notifyPatient: Communication
+  end
+
+  rect rgba(255,150,150,0.12)
+  Note over Pt,LAB: 5–6 · Lab visit (human task: patient, completed by the lab) and results
+  Pt->>UI: Patient app shows "visit the lab"
+  opt SMART on FHIR mode
+    UI->>APIM: Sign in, then API calls with the patient's token
+    APIM->>API: Forward to /api
+  end
+  LabTech->>UI: Lab console: Collect specimen
+  UI->>SIM: /lab-api
+  SIM->>LAB: Create Specimen
+  SIM->>API: FHIR message to /fhir/r4/$process-message
+  API->>WF: Complete human task labVisit
+  LabTech->>UI: Lab console: Release results
+  SIM->>LAB: Create DiagnosticReport and Observations
+  SIM->>API: FHIR message (DiagnosticReport + Observations)
+  API->>WF: Signal labResultReady
+  Note right of API: If the message is missed, the fallback poller reads the results from the lab FHIR server
+  end
+
+  rect rgba(190,150,255,0.12)
+  Note over WF,CL: 7 · Unattended: results, agents, draft note
+  WF->>EHR: collectLabResults: file results in the EHR
+  WF->>AG: analyseResults
+  AG->>AMP: MCP reads (EHR) and PubMed search, Claude calls
+  AMP->>CL: Claude call
+  AG-->>WF: ResultsAnalysis
+  WF->>AG: writeCarePlan (no EHR access)
+  AG->>AMP: PubMed search, Claude calls
+  AG-->>WF: CarePlanResult
+  WF->>EHR: fileDraftNote: DocumentReference (preliminary)
+  end
+
+  rect rgba(120,200,220,0.12)
+  Note over Dr,PG: 8 · Review and release (human task: physician)
+  Dr->>UI: Review analysis and draft, Release
+  UI->>API: POST /release
+  API->>WF: Complete human task reviewAndRelease
+  WF->>EHR: finalizeInEhr: note final, Encounter finished
+  WF->>PG: publishLongevityRecord
+  Pt->>UI: Patient app shows the report
+  UI->>API: GET longevity record
+  API->>PG: Read
+  end
+```
+
 ## How it is built, and why
 
 | Decision | Why |
